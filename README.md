@@ -49,7 +49,7 @@ While this might seem like it should work, in reality we have a big problem.
 
 Web requests in JavaScript are *asynchronous*. That means if we make a web request on line 1:
 
-``js
+```js
 const cats = fetch('http://www.catapi.com')
 return {type: 'FETCH_CATS', payload: cats}
 ```
