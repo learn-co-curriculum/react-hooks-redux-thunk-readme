@@ -58,7 +58,7 @@ the code on line 2 will start running *before the web request resolves and we ha
 
 A `fetch` request returns a something called a **Promise**. A promise object is an object that represents somve value that will be available later. We can access the data when the promise "resolves" and becomes availalbe by chaingin a `then` function onto our `fetch` call.
 
-``js
+```js
 const cats = fetch('http://www.catapi.com').then(response => {
   return response.json()
 })
