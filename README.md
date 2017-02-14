@@ -4,7 +4,7 @@
 
 * Learn how to use action creator functions to make asynchronous web requests for data in Redux
 * Understand why we need special middleware in order to make some action creator functions able to make asynchronous web requests.
-* Learn how to use the Redux Promise middleware to make some actions asynchronous
+* Learn how to use the Redux Thunk middleware to make some actions asynchronous
 
 
 ## Introduction: Asynchronous Web Requests with Fetch and Promises
@@ -35,34 +35,83 @@ Well, we already know how to make a web request. We can using something like Jav
 fetch('http://www.catapi.com')
 ```
 
-So, can we simply make a `fetch` request inside our action creator function, instead of hard-coding in our data?
+So, can we simply make a `fetch` request inside our action creator function, instead of hard-coding in our data?  The code below, is a good attempt, but ultimately ends failure and disappointment.  
 
 ```js
-function fetchCats() {
-  const cats = fetch('http://www.catapi.com')
+// src/components/App.js
 
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { fetchCats } from '../actions/fetchCats'
+
+class App extends Component {
+  handleOnClick(){
+    this.props.fetchCats()
+  }
+  render(){
+    return(
+      let cats = this.props.cats.map(function(cat){
+        return (<li>
+          {cat.name}
+        </li>)
+      })
+      <div>
+        <button onClick={this.handleOnClick.bind(this)} />
+        {cats}
+      </div>
+    )
+  }
+}
+
+export connect(mapStateToProps, mapDispatchToProps)(App)
+
+function mapDispatchToProps(dispatch){
+  bindActionCreators(dispatch, {fetchCats: fetchCats})
+}
+
+function mapStateToProps(state){
+  return {cats: state.cats}
+}
+
+// src/actions/fetchCats.js
+export function fetchCats() {
+  const cats = fetch('http://www.catapi.com')
   return {type: 'FETCH_CATS', payload: cats}
+}
+
+// src/reducer.js
+function reducer(state = [], action){
+  switch (action.type) {
+    case 'FETCH_CATS':
+      return action.payload
+    default:
+      return state;
+  }
 }
 ```
 
+So if you look at the code above, you can a sense for what we are trying to do.  When a user clicks on the button, we call the handleOnClick function.  This calls our action creator, the fetchCats function.  The action creator hits the api, and returns an action with our data, which then updates the state through the reducer.
+
 While this might seem like it should work, in reality we have a big problem.
 
-Web requests in JavaScript are *asynchronous*. That means if we make a web request on line 1:
+Web requests in JavaScript are *asynchronous*. That means if we make a web request at the first line of our fetchCats function:
 
 ```js
 const cats = fetch('http://www.catapi.com')
 return {type: 'FETCH_CATS', payload: cats}
 ```
 
-the code on line 2 will start running *before the web request resolves and we have a response that we can work with*.
+the code on the second line will start running *before the web request resolves and we have a response that we can work with*.
 
 A `fetch` request returns a something called a **Promise**. A promise object is an object that represents some value that will be available later. We can access the data when the promise "resolves" and becomes available by changing a `then` function onto our `fetch` call.
 
 ```js
 function fetchCats() {
-  const cats = fetch('http://www.catapi.com').then(response => {
-    return response.json()
-  })
+  const cats = fetch('http://www.catapi.com').
+    then(response => {
+      return response.json()
+    })
   return {type: 'FETCH_CATS', payload: cats}
 }
 ```
@@ -71,36 +120,17 @@ Our `then` function will run *when the promise that `fetch` returns is resolved*
 
 There's another problem.  Because the retrieving data takes time, and because we always want our redux application to reflect the current application state, we want to represent the state of the application in between the user asking for data, and the application receiving the data.  It's almost like each time a user asks for data we want to dispatch two actions to update our state: one to place our state as loading, and another to update the state with the data.  
 
+So these are the steps we want to happen when the user wishes to call the api.
+1. Invoke `fetchCats`
+2. Directly after invoking `fetchCats` we dispatch an action that we are loading data.
+3. Then we call the `fetch` method, which runs, and returns a promise that we are waiting to resolve.
+4. When the promise is resolved, we dispatch another action with `type` and `payload` which is sent to the reducer.
+
+Great.  So how do we do all of this?
+
 ### We Need Middleware!
 
-Let's think about how we dispatch actions to our reducers. We might call something like:
-
-```js
-store.dispatch(fetchCats())
-```
-
-The `dispatch` function is taking in an argument of the invocation of our `fetchCats` action creator function. So, `fetchCats` is invoked, and the return value of that function is passed to our reducer.
-
-So, if our `fetchCats` action looks like this:
-
-```js
-function fetchCats() {
-  const cats = fetch('http://www.catapi.com').then(response => {
-    return response.json()
-  })
-  return {type: 'FETCH_CATS', payload: cats}
-}
-```
-
-Then the order in which our code will actually execute is:
-
-1. Invoke `fetchCats`
-2. The `fetch` request runs, and returns a promise that we are waiting to resolve.
-3. While we wait for our promise to resolve, and the `then` function to run, the rest of our code continues!
-4. The function returns the object with a key of `type`, set to `'FETCH_CATS'`, and a key of `payload`, which is **set to a Promise object that has not yet resolved**.
-5. This little object with `type` and `payload` is sent to the reducer.
-
-If only there was some way to dispatch an action to make a request to the api, then wait for the response and then dispatch another action with the response data.
+So we need a way to dispatch an action saying we are loading data, then to make a request to the api, and then to wait for the response and then dispatch another action with the response data.
 
 Lucky for us, we can use some **middleware** for exactly that!
 
@@ -143,7 +173,7 @@ Let's see the code and then we'll walk through it.
 function fetchCats() {
   return function (dispatch) {
     dispatch({type: 'LOADING_CATS'})
-    const cats = fetch('http://www.catapi.com').then(response => {
+    return fetch('http://www.catapi.com').then(response => {
       return response.json()
     }).then(function(response){
       dispatch({type: 'ADD_CATS', payload: response})
