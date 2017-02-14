@@ -133,7 +133,9 @@ ReactDOM.render(
 
 ## Using Redux-Thunk Middleware
 
-We'll tell our store to use the Redux-Thunk middleware. This middleware will allow us to dispatch multiple actions at a time instead of just one.  Let's see the code and then we'll walk through it.
+We'll tell our store to use the Redux-Thunk middleware. This middleware will do a couple of interesting things.  First, redux thunk allows us to return a function inside of our action creator.  Normally, our action creator returns a plain javascript object, so returning a function is a pretty big change.  Second, that function inside of redux thunk receives as it's argument, the store's dispatch method.  And with that, we can dispatch multiple actions from inside that returned function.
+
+Let's see the code and then we'll walk through it.
 
 ```js
 // actions/fetchCats.js
@@ -149,3 +151,9 @@ function fetchCats() {
   };
 }
 ```
+
+So you can see above that we are returning a function and not an action, and that the power we now get is the ability to dispatch actions from inside of the returned function.  So with that power, we first dispatch an action to state that we are about to make a request to our api.  Then we make the request.  And then, because we do not hit our then until the response is received, this means that we are not dispatching our our action of type 'ADD_CATS' until we receive our data.  And thus we are able to send along that data.
+
+### Summary
+
+We saw that when retrieving data from apis, we run into a problem where the action creator returns an action before the data is retrieved.  To resolve this, we use a middleware called redux thunk.  Redux thunk allows us to return a function inside of our action creator instead of a plain javascript object.  That returned function receives the store's dispatch function, and with that we are able to dispatch multiple actions: one to place the state in a loading state, and another to update our store with the returned data.
