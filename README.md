@@ -144,7 +144,7 @@ So we need a way to dispatch an action saying we are loading data, then to make 
 
 Lucky for us, we can use some **middleware** for exactly that!
 
-We need to install the __Redux Thunk()__ package:
+To use __Redux Thunk__ you would need to install the npm package:
 
 ```
 npm install --save redux-thunk
