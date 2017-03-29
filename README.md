@@ -114,7 +114,7 @@ export function fetchCats() {
 
 the code on the second line will start running *before the web request resolves and we have a response that we can work with*.
 
-A __fetch()__ request returns a something called a **Promise**. A promise object is an object that represents some value that will be available later. We can access the data when the promise "resolves" and becomes available by changing a __then()__ function onto our __fetch()__ call.
+A __fetch()__ request returns a something called a **Promise**. A promise object is an object that represents some value that will be available later. We can access the data when the promise "resolves" and becomes available by chaining a __then()__ function onto our __fetch()__ call.
 
 ```js
 export function fetchCats() {
