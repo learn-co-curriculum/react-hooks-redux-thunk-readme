@@ -185,10 +185,6 @@ export function fetchCats() {
       .then(response => response.json())
       .then(cats => dispatch({ type: 'ADD_CATS', cats }));
   };
-  return {
-    type: 'FETCH_CATS', 
-    cats
-  };
 }
 ```
 
@@ -197,3 +193,5 @@ So you can see above that we are returning a function and not an action, and tha
 ### Summary
 
 We saw that when retrieving data from APIs, we run into a problem where the action creator returns an action before the data is retrieved. To resolve this, we use a middleware called __Redux Thunk__. __Redux Thunk__ allows us to return a function inside of our action creator instead of a plain JavaScript object. That returned function receives the store's dispatch function, and with that we are able to dispatch multiple actions: one to place the state in a loading state, and another to update our store with the returned data.
+
+<p class='util--hide'>View <a href='https://learn.co/lessons/redux-thunk-readme'>Redux Thunk Readme</a> on Learn.co and start learning to code for free.</p>
