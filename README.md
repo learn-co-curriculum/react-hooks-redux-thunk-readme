@@ -188,7 +188,7 @@ export function fetchCats() {
 }
 ```
 
-So you can see above that we are returning a function and not an action, and that the power we now get is the ability to dispatch actions from inside of the returned function. So with that power, we first dispatch an action to state that we are about to make a request to our API. Then we make the request. We do not hit our __then()__ function until the response is received, this means that we are not dispatching our our action of type 'ADD_CATS' until we receive our data. Thus we are able to send along that data.
+So you can see above that we are returning a function and not an action, and that the power we now get is the ability to dispatch actions from inside of the returned function. So with that power, we first dispatch an action to state that we are about to make a request to our API. Then we make the request. We do not hit our __then()__ function until the response is received, this means that we are not dispatching our action of type 'ADD_CATS' until we receive our data. Thus we are able to send along that data.
 
 ### Summary
 
