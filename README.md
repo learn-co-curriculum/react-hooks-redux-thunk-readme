@@ -173,7 +173,7 @@ ReactDOM.render(
 
 ## Using Redux-Thunk Middleware
 
-We'll tell our store to use the __Redux Thunk__ middleware. This middleware will do a couple of interesting things. First, __Redux Thunk__ allows us to return a function inside of our action creator. Normally, our action creator returns a plain JavaScript object, so returning a function is a pretty big change. Second, that function inside of __Redux Thunk__ receives the store's dispatch function as it's argument. With that, we can dispatch multiple actions from inside that returned function.
+We'll tell our store to use the __Redux Thunk__ middleware. This middleware will do a couple of interesting things. First, __Redux Thunk__ allows us to return a function inside of our action creator. Normally, our action creator returns a plain JavaScript object, so returning a function is a pretty big change. Second, that function inside of __Redux Thunk__ receives the store's dispatch function as its argument. With that, we can dispatch multiple actions from inside that returned function.
 
 Let's see the code and then we'll walk through it.
 
