@@ -58,7 +58,7 @@ class App extends Component {
 };
 
 function mapDispatchToProps(dispatch){
-  bindActionCreators(dispatch, {fetchCats: fetchCats})
+  bindActionCreators({fetchCats: fetchCats}, dispatch)
 }
 
 function mapStateToProps(state){
