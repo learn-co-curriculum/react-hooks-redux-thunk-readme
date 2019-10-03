@@ -57,7 +57,7 @@ function fetchAstronauts() {
     {name: "Michael Collins", craft: "Apollo 11"}
   ];
   return {
-    type: 'FETCH_ASTRONAUTS',
+    type: 'ADD_ASTRONAUTS',
     astronauts
   };
 };
@@ -107,7 +107,7 @@ function mapDispatchToProps(dispatch){
 }
 
 function mapStateToProps(state){
-  return {astronauts: state.astronauts}
+  return { astronauts: state.astronauts }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App)
@@ -116,17 +116,17 @@ export default connect(mapStateToProps, mapDispatchToProps)(App)
 export function fetchAstronauts() {
   const astronauts = fetch('http://api.open-notify.org/astros.json');
   return {
-    type: 'FETCH_ASTRONAUTS',
+    type: 'ADD_ASTRONAUTS',
     astronauts
   };
 };
 
 // ./src/astronautsReducer.js
-function astronautsReducer(state = [], action) {
+function astronautsReducer(state = { astronauts: [] }, action) {
   switch (action.type) {
 
-    case 'FETCH_ASTRONAUTS':
-      return action.astronauts
+    case 'ADD_ASTRONAUTS':
+      return { ...state, astronauts: action.astronauts }
 
     default:
       return state;
@@ -149,7 +149,7 @@ request at the first line of our `fetchAstronauts()` function:
 export function fetchAstronauts() {
   const astronauts = fetch('http://api.open-notify.org/astros.json');
   return {
-    type: 'FETCH_ASTRONAUTS',
+    type: 'ADD_ASTRONAUTS',
     astronauts
   };
 };
@@ -168,7 +168,7 @@ export function fetchAstronauts() {
   const astronauts = fetch('http://api.open-notify.org/astros.json')
                       .then(response => response.json())
   return {
-    type: 'FETCH_ASTRONAUTS',
+    type: 'ADD_ASTRONAUTS',
     astronauts
   };
 }
@@ -258,7 +258,7 @@ Let's see the code and then we'll walk through it.
 export function fetchAstronauts() {
   return (dispatch) => {
     dispatch({ type: 'START_ADDING_ASTRONAUTS_REQUEST' });
-    return fetch('http://api.open-notify.org/astros.json')
+    fetch('http://api.open-notify.org/astros.json')
       .then(response => response.json())
       .then(astronauts => dispatch({ type: 'ADD_ASTRONAUTS', astronauts }));
   };
@@ -272,6 +272,130 @@ we are about to make a request to our API. Then we make the request. We do not
 hit our `then()` function until the response is received, this means that we
 are not dispatching our action of type 'ADD_ASTRONAUTS' until we receive our data.
 Thus, we are able to send along that data.
+
+### Reviewing Everything Together
+
+Let's review the whole application now with Redux and Thunk configured. First we
+have `index.js`, which now imports `thunk` and `applyMiddleware` and
+uses them when creating the Redux store:
+
+```js
+// ./src/index.js
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+import rootReducer from './reducers';
+
+const store = createStore(rootReducer, applyMiddleware(thunk));
+
+ReactDOM.render(
+  <Provider store={store} >
+    <App />
+  </Provider>, document.getElementById('container')
+)
+```
+
+The `App.js` component we showed earlier can remain the same &mdash; note that
+although we've called a function `fetchAstronauts()`, no actual asynchronous
+code is in the component. The component's main purpose is to render JSX. It uses
+data from Redux via `mapStateToProps()` and connects an `onClick` event to an
+action through `mapDispatchToProps()`:
+
+```js
+// ./src/App.js
+
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { fetchAstronauts } from '../actions/fetchAstronauts'
+
+class App extends Component {
+
+  handleOnClick() {
+    this.props.fetchAstronauts()
+  }
+
+  render() {
+    const astronauts = this.props.astronauts.map(astro => <li key={astro.id}>{astro.name}</li>);
+
+    return(
+      <div>
+        <button onClick={(event) = this.handleOnClick(event)} />
+        {astronauts}
+      </div>
+    );
+  }
+};
+
+function mapDispatchToProps(dispatch){
+  return { fetchAstronauts: () => dispatch(fetchAstronauts()) }
+}
+
+function mapStateToProps(state){
+  return {astronauts: state.astronauts}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)
+```
+
+What happens when the `onClick` event is fired? All of that logic
+is taken care of outside of the component, in our `fetchAstronauts()`
+action:
+
+```js
+// actions/fetchAstronauts.js
+export function fetchAstronauts() {
+  return (dispatch) => {
+    dispatch({ type: 'START_ADDING_ASTRONAUTS_REQUEST' });
+    fetch('http://api.open-notify.org/astros.json')
+      .then(response => response.json())
+      .then(astronauts => dispatch({ type: 'ADD_ASTRONAUTS', astronauts }));
+  };
+}
+```
+
+With Thunk configured, our actions can now _return_ a function. We must write
+the function, but we know that `dispatch()` is passed in as an argument. Notice
+in the code above that there are _two_ calls to `dispatch()`, first passing in
+`{ type: 'START_ADDING_ASTRONAUTS_REQUEST' }` before the `fetch()` call, then
+passing in `{ type: 'ADD_ASTRONAUTS', astronauts }` _inside_ `.then()`.
+By having both `dispatch()` calls, it is possible to know just before
+our application sends a remote request, and then immediately after that
+request is resolved.
+
+We can update our reducer to include both `type`s and to also change a bit of
+state to indicate if data is in the process of being fetched. We'll modify the
+initial state to do this:
+
+```js
+// ./src/astronautsReducer.js
+function astronautsReducer(state = { astronauts: [], requesting: false }, action) {
+  switch (action.type) {
+
+    case 'START_ADDING_ASTRONAUTS_REQUEST':
+      return {
+        ...state,
+        astronauts: [...state.astronauts],
+        requesting: true
+      }
+
+    case 'ADD_ASTRONAUTS':
+      return {
+        ...state,
+        astronauts: action.astronauts,
+        requesting: false
+      }
+
+    default:
+      return state;
+  }
+};
+```
+
+Now, we have a way to indicate in our app when data is being loaded! If
+`requesting` is true, we could display a loading message in JSX!
 
 ### Summary
 
