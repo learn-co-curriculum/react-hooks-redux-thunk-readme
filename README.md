@@ -32,7 +32,7 @@ data from other sources.
 Well, if we had a server or an API, we could _fetch_ some remote data, but we're
 presented with a familiar problem &dash; we've just removed a lot of logic from
 our components and now we're going to add more logic? Specifically, we're going
-to fetch data we'll likely want to keep in our Redux store - adding code to our
+to fetch data we'll likely want to keep in our Redux store &dash; adding code to our
 components seems to be a step backwards.
 
 With Thunk, we can incorporate asynchronous code in with our Redux actions. This
