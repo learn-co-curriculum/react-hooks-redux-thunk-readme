@@ -24,13 +24,13 @@ actions and reducers to handle the logic of organizing data. In following with
 this pattern, we'll be discussing a package that works in conjunction with
 Redux: Thunk.
 
-Thunk handles asynchronous calls when working with Redux - Think for a moment:
+Thunk handles asynchronous calls when working with Redux &mdash; Think for a moment:
 we have Redux handling all our app's data. So far, it's all be hard-coded
 data, i.e. data that we set ourselves. It would be great if could start getting
 data from other sources.
 
 Well, if we had a server or an API, we could _fetch_ some remote data, but we're
-presented with a familiar problem $mdash; we've just removed a lot of logic from
+presented with a familiar problem &dash; we've just removed a lot of logic from
 our components and now we're going to add more logic? Specifically, we're going
 to fetch data we'll likely want to keep in our Redux store - adding code to our
 components seems to be a step backwards.
