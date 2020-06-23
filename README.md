@@ -16,7 +16,7 @@ control the data of an application. In a standard React + Redux application, any
 child component can connect to the store directly from anywhere in the app. This
 allows us to keep many of our React components simple &mdash; no need for
 passing props through many nested components, no need to use component `state`
-to keep track of all the data. A of code that would normally be stored in React
+to keep track of all the data. A lot of code that would normally be stored in React
 components can be removed or replaced.
 
 With Redux, we can focus more on presentation in our React components, and use
@@ -24,13 +24,13 @@ actions and reducers to handle the logic of organizing data. In following with
 this pattern, we'll be discussing a package that works in conjunction with
 Redux: Thunk.
 
-Thunk handles asynchronous calls when working with Redux - Think for a moment:
-we have Redux handling all our app's data. So far, it's all be hard-coded
-data, i.e. data that we set ourselves. It would be great if could start getting
+Thunk handles asynchronous calls when working with Redux. Think for a moment:
+we have Redux handling all our app's data. So far, it's all been hard-coded
+data, i.e. data that we set ourselves. It would be great if we could start getting
 data from other sources.
 
 Well, if we had a server or an API, we could _fetch_ some remote data, but we're
-presented with a familiar problem $mdash; we've just removed a lot of logic from
+presented with a familiar problem: we've just removed a lot of logic from
 our components and now we're going to add more logic? Specifically, we're going
 to fetch data we'll likely want to keep in our Redux store - adding code to our
 components seems to be a step backwards.
@@ -40,11 +40,11 @@ allows us to continue keeping our components relatively simple and more focused 
 presentation. In this lesson, we're going to go through what Thunk is and how it
 is implemented with Redux.
 
-## Trying to Sent an Asynchronous Request in Redux
+## Trying to Send an Asynchronous Request in Redux
 
 We're familiar with the `Redux` pattern in which the store dispatches an
-action to the reducer, which then takes that information in an action object to
-make changes to state, in turn causing components to re-render with new data.
+action to the reducer, the reducer uses that action to
+make changes to the state, and components re-render with new data.
 
 Going back to hard-coded examples, in previous lessons, we populated our store
 using data inside an action creator function. Something like this:
@@ -67,7 +67,7 @@ What happens though, when we're ready to pull in real live data from an external
 source like an API?
 
 Well, we already know how to make a web request. We can use something like
-JavaScript's native Fetch API to sent a web request:
+JavaScript's native Fetch API to send a web request:
 
 ```js
 fetch('http://api.open-notify.org/astros.json')
@@ -142,7 +142,7 @@ through the reducer.
 
 While this might seem like it should work, in reality we have a big problem.
 
-Web requests in JavaScript are *asynchronous*. That means if we make a web
+Fetch requests in JavaScript are *asynchronous*. That means if we make a fetch
 request at the first line of our `fetchAstronauts()` function:
 
 ```js
@@ -182,19 +182,19 @@ return before the Promise is resolved.
 There's another problem. Because retrieving data takes time, and because we
 always want our `Redux` application to reflect the current application state,
 we want to represent the state of the application in between the user asking for
-data, and the application receiving the data. It's almost like each time a user
+data and the application receiving the data. It's almost like each time a user
 asks for data we want to dispatch two actions to update our state: one to place
 our state as loading, and another to update the state with the data.
 
 So these are the steps we want to happen when the user wishes to call the API:
 
 1. Invoke `fetchAstronauts()`
-2. Directly after invoking `fetchAstronauts()` we dispatch an action that we are
+2. Directly after invoking `fetchAstronauts()` dispatch an action to indicate that we are
    loading data.
-3. Then we call the `fetch()` method, which runs, and returns a Promise that
+3. Call the `fetch()` method, which runs, and returns a Promise that
    we are waiting to resolve.
-4. When the Promise resolves, we dispatch another action with a `type` and
-   `astronauts` that gets sent to the reducer.
+4. When the Promise resolves, dispatch another action with a payload of the
+   fetched data that gets sent to the reducer.
 
 Great. So how do we do all of this?
 
@@ -206,7 +206,7 @@ another action with the response data.
 
 Lucky for us, we can use some **middleware** for exactly that! Middleware, in
 this case, will allow us to slightly alter the behavior of our actions, allowing
-us add in asynchronous requests. In this case, for middleware, we'll be using
+us to add in asynchronous requests. In this case, for middleware, we'll be using
 Thunk.
 
 To use __Redux Thunk__ you would need to install the NPM package:
@@ -244,11 +244,13 @@ in `applyMiddleware(thunk)` as a second argument to `createStore`.
 ## Using Redux-Thunk Middleware
 
 In the above code, we tell our store to use the Thunk middleware. This
-middleware will do a couple of interesting things. First, Thunk allows
-us to return a function inside of our action creator. Normally, our action
+middleware will do a couple of interesting things:
+
+1. Thunk allows us to return a function inside of our action creator. Normally, our action
 creator returns a plain JavaScript object, so returning a function is a pretty
-big change. Second, that function inside of Thunk receives the store's
-dispatch function as its argument. With that, we can dispatch multiple actions
+big change. 
+
+2. That function receives the store's dispatch function as its argument. With that, we can dispatch multiple actions
 from inside that returned function.
 
 Let's see the code and then we'll walk through it.
@@ -267,9 +269,9 @@ export function fetchAstronauts() {
 
 So you can see above that we are returning a function and not an action, and
 that the power we now get is the ability to dispatch actions from inside of the
-returned function. So with that power, we first dispatch an action to state that
+returned function. So with that power, we first dispatch an action to indicate that
 we are about to make a request to our API. Then we make the request. We do not
-hit our `then()` function until the response is received, this means that we
+hit our `then()` function until the response is received, which means that we
 are not dispatching our action of type 'ADD_ASTRONAUTS' until we receive our data.
 Thus, we are able to send along that data.
 
