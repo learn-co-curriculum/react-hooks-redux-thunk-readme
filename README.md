@@ -95,7 +95,7 @@ class App extends Component {
 
     return(
       <div>
-        <button onClick={(event) = this.handleOnClick(event)} />
+        <button onClick={(event) => this.handleOnClick(event)} />
         {astronauts}
       </div>
     );
@@ -237,8 +237,8 @@ ReactDOM.render(
 )
 ```
 
-Notice that we imported in a new function, `applyMiddleware()`, from
-`react-redux`, along with `thunk` from the `redux-thunk` package and pass
+Notice that we imported in a new function `applyMiddleware()` from
+`redux`, along with `thunk` from the `redux-thunk` package, and passed
 in `applyMiddleware(thunk)` as a second argument to `createStore`.
 
 ## Using Redux-Thunk Middleware
@@ -324,7 +324,7 @@ class App extends Component {
 
     return(
       <div>
-        <button onClick={(event) = this.handleOnClick(event)} />
+        <button onClick={(event) => this.handleOnClick(event)} />
         {astronauts}
       </div>
     );
