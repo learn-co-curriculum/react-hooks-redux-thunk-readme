@@ -216,7 +216,7 @@ Thunk.
 To use `redux-thunk` you would need to install the NPM package:
 
 ```sh
-npm install --save redux-thunk
+npm install redux-thunk
 ```
 
 Then, when you initialize the store in your `index.js` file, you can incorporate
@@ -231,7 +231,7 @@ import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from "redux-thunk";
 import App from "./App";
-import rootReducer from "./reducers";
+import rootReducer from "./reducer";
 
 const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -263,7 +263,7 @@ import { createStore, applyMiddleware } from "redux";
 import thunkMiddleware from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import App from "./App";
-import rootReducer from "./reducers";
+import rootReducer from "./reducer";
 
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
 
@@ -299,7 +299,10 @@ export function fetchAstronauts() {
     fetch("http://api.open-notify.org/astros.json")
       .then((response) => response.json())
       .then((astronauts) =>
-        dispatch({ type: "astronauts/astronautsLoaded", payload: astronauts })
+        dispatch({
+          type: "astronauts/astronautsLoaded",
+          payload: astronauts.people,
+        })
       );
   };
 }
@@ -390,7 +393,10 @@ export function fetchAstronauts() {
     fetch("http://api.open-notify.org/astros.json")
       .then((response) => response.json())
       .then((astronauts) =>
-        dispatch({ type: "astronauts/astronautsLoaded", payload: astronauts })
+        dispatch({
+          type: "astronauts/astronautsLoaded",
+          payload: astronauts.people,
+        })
       );
   };
 }
