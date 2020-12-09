@@ -93,14 +93,14 @@ function Astronauts() {
     dispatch(fetchAstronauts());
   }
 
-  const astronauts = astronauts.map((astro) => (
+  const astronautsList = astronauts.map((astro) => (
     <li key={astro.id}>{astro.name}</li>
   ));
 
   return (
     <div>
-      <button onClick={handleClick} />
-      {astronauts}
+      <button onClick={handleClick}>Get Astronauts</button>
+      {astronautsList}
     </div>
   );
 }
@@ -363,14 +363,14 @@ function Astronauts() {
     dispatch(fetchAstronauts());
   }
 
-  const astronauts = astronauts.map((astro) => (
+  const astronautsList = astronauts.map((astro) => (
     <li key={astro.id}>{astro.name}</li>
   ));
 
   return (
     <div>
-      <button onClick={handleClick} />
-      {astronauts}
+      <button onClick={handleClick}>Get Astronauts</button>
+      {astronautsList}
     </div>
   );
 }
