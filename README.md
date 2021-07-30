@@ -14,7 +14,7 @@
 Part of the value of using Redux is that it provides a centralized way to
 control the data of an application. In a standard React + Redux application, any
 child component can connect to the store directly from anywhere in the app. This
-allows us to keep many of our React components simple &mdash; no need for
+allows us to keep many of our React components simple — no need for
 passing props through many nested components, no need to use component `state`
 to keep track of all the data. A lot of code that would normally be stored in
 React components can be removed or replaced.
@@ -32,7 +32,7 @@ start getting data from other sources.
 Well, if we had a server or an API, we could _fetch_ some remote data, but we're
 presented with a familiar problem: we've just removed a lot of logic from our
 components and now we're going to add more logic? Specifically, we're going to
-fetch data we'll likely want to keep in our Redux store &mdash; adding code to
+fetch data we'll likely want to keep in our Redux store — adding code to
 our components seems to be a step backwards.
 
 With `redux-thunk`, we can incorporate asynchronous code in with our Redux
@@ -345,7 +345,7 @@ ReactDOM.render(
 );
 ```
 
-The `Astronauts.js` component we showed earlier can remain the same &mdash; note that
+The `Astronauts.js` component we showed earlier can remain the same — note that
 although we've called a function `fetchAstronauts()`, no actual asynchronous
 code is in the component. The component's main purpose is to render JSX. It uses
 data from Redux via `useSelector()` and connects an `onClick` event to an
