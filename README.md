@@ -453,5 +453,3 @@ function inside of our action creator instead of a plain JavaScript object. That
 returned function receives the store's dispatch function, and with that we are
 able to dispatch multiple actions: one to place the state in a loading state,
 and another to update our store with the returned data.
-
-<p class='util--hide'>View <a href='https://learn.co/lessons/redux-thunk-readme'>Redux Thunk Readme</a> on Learn.co and start learning to code for free.</p>
