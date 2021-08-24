@@ -77,7 +77,7 @@ So, can we simply make a `fetch` request inside our action creator function
 instead of hard-coding our data? The code below is a good attempt, but it
 ultimately ends in failure and disappointment:
 
-```js
+```jsx
 // ./src/features/astronauts/Astronauts.js
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -222,7 +222,7 @@ $ npm install redux-thunk
 Then, when you initialize the store in your `index.js` file, you can incorporate
 your middleware like this:
 
-```js
+```jsx
 // src/index.js
 
 import React from "react";
@@ -256,7 +256,7 @@ $ npm install redux-devtools-extension
 
 Then update our `index.js` file like so:
 
-```js
+```jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -323,7 +323,7 @@ Let's review the whole application now with `redux` and `redux-thunk`
 configured. First we have `index.js`, which now imports `redux-thunk` and
 `applyMiddleware` and uses them when creating the Redux store:
 
-```js
+```jsx
 // ./src/index.js
 import React from "react";
 import ReactDOM from "react-dom";
@@ -352,7 +352,7 @@ code is in the component. The component's main purpose is to render JSX. It uses
 data from Redux via `useSelector()` and connects an `onClick` event to an
 action through `useDispatch()`:
 
-```js
+```jsx
 // ./src/features/astronauts/Astronauts.js
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
