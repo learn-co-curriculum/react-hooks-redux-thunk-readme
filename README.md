@@ -14,10 +14,10 @@
 Part of the value of using Redux is that it provides a centralized way to
 control the data of an application. In a standard React + Redux application, any
 child component can connect to the store directly from anywhere in the app. This
-allows us to keep many of our React components simple — no need for
-passing props through many nested components, no need to use component `state`
-to keep track of all the data. A lot of code that would normally be stored in
-React components can be removed or replaced.
+allows us to keep many of our React components simple — no need for passing
+props through many nested components, no need to use component `state` to keep
+track of all the data. A lot of code that would normally be stored in React
+components can be removed or replaced.
 
 With Redux, we can focus more on presentation in our React components, and use
 actions and reducers to handle the logic of organizing data. In following with
@@ -168,9 +168,9 @@ the data when the promise "resolves" and becomes available by chaining a
 
 ```js
 export function fetchAstronauts() {
-  const astronauts = fetch(
-    "http://api.open-notify.org/astros.json"
-  ).then((response) => response.json());
+  const astronauts = fetch("http://api.open-notify.org/astros.json").then(
+    (response) => response.json()
+  );
   return {
     type: "astronauts/astronautsLoaded",
     payload: astronauts,
@@ -193,8 +193,8 @@ state as loading, and another to update the state with the data.
 So these are the steps we want to happen when the user wishes to call the API:
 
 1. Invoke `fetchAstronauts()`
-2. Directly after invoking `fetchAstronauts()` dispatch an action to indicate that we are
-   loading data.
+2. Directly after invoking `fetchAstronauts()` dispatch an action to indicate
+   that we are loading data.
 3. Call the `fetch()` method, which runs, and returns a Promise that
    we are waiting to resolve.
 4. When the Promise resolves, dispatch another action with a payload of the
@@ -215,8 +215,8 @@ Thunk.
 
 To use `redux-thunk` you would need to install the NPM package:
 
-```sh
-npm install redux-thunk
+```console
+$ npm install redux-thunk
 ```
 
 Then, when you initialize the store in your `index.js` file, you can incorporate
@@ -247,10 +247,11 @@ Notice that we imported in a new function `applyMiddleware()` from
 `redux`, along with `thunk` from the `redux-thunk` package, and passed
 in `applyMiddleware(thunk)` as a second argument to `createStore`.
 
-We can also set up our app to use the Redux DevTools. We'll use another package, `redux-devtools-extension`, to help with the setup:
+We can also set up our app to use the Redux DevTools. We'll use another package,
+`redux-devtools-extension`, to help with the setup:
 
-```sh
-npm install redux-devtools-extension
+```console
+$ npm install redux-devtools-extension
 ```
 
 Then update our `index.js` file like so:
