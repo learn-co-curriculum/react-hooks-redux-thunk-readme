@@ -1,13 +1,10 @@
 # Asynchronous Web Requests with Using Thunk and Redux
 
-## Objectives
+## Learning Goals
 
-- Learn how to use action creator functions to make asynchronous web requests
-  for data in `Redux`
-- Understand why we need special middleware in order to make some action creator
-  functions able to make asynchronous web requests.
-- Learn how to use the **Redux Thunk** middleware to make some actions
-  asynchronous
+- Use action creator functions to make asynchronous web requests
+- Explain why middleware is necessary for asynchronous actions
+- Use the `redux-thunk` middleware for asynchronous actions
 
 ## Introduction
 
