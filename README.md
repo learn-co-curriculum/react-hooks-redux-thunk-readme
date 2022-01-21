@@ -9,7 +9,7 @@
 ## Introduction
 
 Part of the value of using Redux is that it provides a centralized way to
-control the data of an application. In a standard React + Redux application, any
+control the data of an application. In a standard React/Redux application, any
 child component can connect to the store directly from anywhere in the app. This
 allows us to keep many of our React components simple — no need for passing
 props through many nested components, no need to use component `state` to keep
@@ -29,8 +29,8 @@ start getting data from other sources.
 Well, if we had a server or an API, we could _fetch_ some remote data, but we're
 presented with a familiar problem: we've just removed a lot of logic from our
 components and now we're going to add more logic? Specifically, we're going to
-fetch data we'll likely want to keep in our Redux store — adding code to
-our components seems to be a step backwards.
+fetch data we'll likely want to keep in our Redux store — adding code to our
+components seems to be a step backwards.
 
 With `redux-thunk`, we can incorporate asynchronous code in with our Redux
 actions. This allows us to continue keeping our components relatively simple and
@@ -39,8 +39,8 @@ Thunk is and how it is implemented with Redux.
 
 ## Trying to Send an Asynchronous Request in Redux
 
-We're familiar with the `redux` pattern in which the store dispatches an action
-to the reducer, the reducer uses that action to make changes to the state, and
+We're familiar with the Redux pattern in which the store dispatches an action to
+the reducer, the reducer uses that action to make changes to the state, and
 components re-render with new data.
 
 Going back to hard-coded examples, in previous lessons, we populated our store
@@ -136,9 +136,9 @@ export default function reducer(state = initialState, action) {
 
 So if you look at the code above, you get a sense for what we are trying to do.
 When a user clicks on the button, we call the `handleOnClick()` function. This
-calls our action creator, the `fetchAstronauts()` function. The action creator then
-hits the API, and returns an action with our data, which then updates the state
-through the reducer.
+calls our action creator, the `fetchAstronauts()` function. The action creator
+then hits the API, and returns an action with our data, which then updates the
+state through the reducer.
 
 While this might seem like it should work, in reality we have a big problem.
 
@@ -177,23 +177,23 @@ export function fetchAstronauts() {
 
 Our `then()` function will run when the Promise that `fetch()` returns is
 _resolved_, allowing us to access the response data and parse it into JSON. This
-doesn't solve our problem though because the `fetchAstronauts()` function will still
-return before the Promise is resolved.
+doesn't solve our problem though because the `fetchAstronauts()` function will
+still return before the Promise is resolved.
 
 There's another problem. Because retrieving data takes time, and because we
-always want our `redux` store to reflect the current application state, we want
-to represent the state of the application in between the user asking for data
-and the application receiving the data. It's almost like each time a user asks
-for data we want to dispatch two actions to update our state: one to place our
-state as loading, and another to update the state with the data.
+always want our Redux store to reflect the current application state, we want to
+represent the state of the application in between the user asking for data and
+the application receiving the data. It's almost like each time a user asks for
+data we want to dispatch two actions to update our state: one to place our state
+as loading, and another to update the state with the data.
 
 So these are the steps we want to happen when the user wishes to call the API:
 
 1. Invoke `fetchAstronauts()`
 2. Directly after invoking `fetchAstronauts()` dispatch an action to indicate
    that we are loading data.
-3. Call the `fetch()` method, which runs, and returns a Promise that
-   we are waiting to resolve.
+3. Call the `fetch()` method, which runs, and returns a Promise that we are
+   waiting to resolve.
 4. When the Promise resolves, dispatch another action with a payload of the
    fetched data that gets sent to the reducer.
 
@@ -240,9 +240,9 @@ ReactDOM.render(
 );
 ```
 
-Notice that we imported in a new function `applyMiddleware()` from
-`redux`, along with `thunk` from the `redux-thunk` package, and passed
-in `applyMiddleware(thunk)` as a second argument to `createStore`.
+Notice that we imported in a new function `applyMiddleware()` from `redux`,
+along with `thunk` from the `redux-thunk` package, and passed in
+`applyMiddleware(thunk)` as a second argument to `createStore`.
 
 We can also set up our app to use the Redux DevTools. We'll use another package,
 `redux-devtools-extension`, to help with the setup:
@@ -280,10 +280,9 @@ ReactDOM.render(
 In the above code, we tell our store to use the `redux-thunk` middleware. This
 middleware will do a couple of interesting things:
 
-1. Thunk allows us to return a function inside of our action creator. Normally, our action
-   creator returns a plain JavaScript object, so returning a function is a pretty
-   big change.
-
+1. `redux-thunk` allows us to **return a function inside of our action
+   creator**. Normally, our action creator returns a plain JavaScript object, so
+   returning a function is a pretty big change.
 2. That function receives the store's dispatch function as its argument. With
    that, we can dispatch multiple actions from inside that returned function.
 
@@ -293,10 +292,14 @@ Let's see the code and then we'll walk through it.
 // src/features/astronauts/astronautsSlice.js
 export function fetchAstronauts() {
   return function (dispatch) {
+    // dispatch an initial action to set up a "loading" state
     dispatch({ type: "astronauts/astronautsLoading" });
+
+    // initiate a network request with fetch
     fetch("http://api.open-notify.org/astros.json")
       .then((response) => response.json())
       .then((astronauts) =>
+        // when we have data from the response, dispatch another action to add the data to our Redux store
         dispatch({
           type: "astronauts/astronautsLoaded",
           payload: astronauts.people,
@@ -306,19 +309,21 @@ export function fetchAstronauts() {
 }
 ```
 
-So you can see above that we are returning a function and not an action, and
-that the power we now get is the ability to dispatch actions from inside of the
-returned function. So with that power, we first dispatch an action to indicate
-that we are about to make a request to our API. Then we make the request. We do
-not hit our `then()` function until the response is received, which means that
-we are not dispatching our action of type `'astronauts/astronautsLoaded'` until
-we receive our data. Thus, we are able to send along that data.
+You can see above that we are returning a _function_ and not an _action_, and
+that the power we now get is the **ability to dispatch actions from inside of
+the returned function**.
+
+With that power, we first dispatch an action to indicate that we are about to
+make a request to our API. Then we make the request. We do not hit our `then()`
+function until the response is received, which means that we are not dispatching
+our action of type `'astronauts/astronautsLoaded'` until we receive our data.
+Thus, we are able to send along that data.
 
 ### Reviewing Everything Together
 
-Let's review the whole application now with `redux` and `redux-thunk`
-configured. First we have `index.js`, which now imports `redux-thunk` and
-`applyMiddleware` and uses them when creating the Redux store:
+Let's review the whole application now with `redux-thunk` configured. First we
+have `index.js`, which now imports `thunkMiddleware` and `applyMiddleware` and
+uses them when creating the Redux store:
 
 ```jsx
 // ./src/index.js
@@ -343,11 +348,11 @@ ReactDOM.render(
 );
 ```
 
-The `Astronauts.js` component we showed earlier can remain the same — note that
+The `Astronauts` component we showed earlier can remain the same — note that
 although we've called a function `fetchAstronauts()`, no actual asynchronous
 code is in the component. The component's main purpose is to render JSX. It uses
-data from Redux via `useSelector()` and connects an `onClick` event to an
-action through `useDispatch()`:
+data from Redux via `useSelector()` and connects an `onClick` event to an action
+through `useDispatch()`:
 
 ```jsx
 // ./src/features/astronauts/Astronauts.js
@@ -379,9 +384,8 @@ function Astronauts() {
 export default Astronauts;
 ```
 
-What happens when the `onClick` event is fired? All of that logic
-is taken care of outside of the component, in our `fetchAstronauts()`
-action:
+What happens when the `onClick` event is fired? All of that logic is taken care
+of outside of the component, in our `fetchAstronauts()` action:
 
 ```js
 // src/features/astronauts/astronautsSlice.js
@@ -400,11 +404,11 @@ export function fetchAstronauts() {
 }
 ```
 
-With Thunk configured, our actions can now _return_ a function. We must write
-the function, but we know that `dispatch()` is passed in as an argument. Notice
-in the code above that there are _two_ calls to `dispatch()`, first passing in
-`{ type: 'astronauts/astronautsLoading' }` before the `fetch()` call, then
-passing in `{ type: 'astronauts/astronautsLoaded', payload: astronauts }`
+With `redux-thunk` configured, our actions can now _return_ a function. We must
+write the function, but we know that `dispatch()` is passed in as an argument.
+Notice in the code above that there are _two_ calls to `dispatch()`, first
+passing in `{ type: 'astronauts/astronautsLoading' }` before the `fetch()` call,
+then passing in `{ type: 'astronauts/astronautsLoaded', payload: astronauts }`
 _inside_ `.then()`. By having both `dispatch()` calls, it is possible to know
 just before our application sends a remote request, and then immediately after
 that request is resolved.
@@ -442,7 +446,7 @@ export default function reducer(state = initialState, action) {
 Now, we have a way to indicate in our app when data is being loaded! If `status`
 is `'loading'`, we could display a loading message in our components.
 
-### Summary
+## Conclusion
 
 We saw that when retrieving data from APIs, we run into a problem where the
 action creator returns an action before the data is retrieved. To resolve this,
