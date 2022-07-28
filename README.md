@@ -1,4 +1,4 @@
-# Asynchronous Web Requests with Using Thunk and Redux
+# Asynchronous Web Requests Using Thunk and Redux
 
 ## Learning Goals
 
